@@ -19,6 +19,7 @@
     <ClCompile Include="..\src\string_util.cpp" />
     <ClCompile Include="..\src\topk_nra.cpp" />
     <ClCompile Include="..\src\topk_score_range.cpp" />
+    <ClCompile Include="..\src\topk_util.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\graph.h" />
@@ -33,6 +34,7 @@
     <ClInclude Include="..\src\string_util.h" />
     <ClInclude Include="..\src\topk_scoreset.h" />
     <ClInclude Include="..\src\topk_score_range.h" />
+    <ClInclude Include="..\src\topk_util.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{10D4337A-3B94-43BD-BCA9-C039DB2D2AE4}</ProjectGuid>
@@ -82,6 +84,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);_SCL_SECURE_NO_WARNINGS</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

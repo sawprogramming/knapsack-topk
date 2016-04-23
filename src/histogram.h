@@ -12,7 +12,7 @@ const size_t NUM_BINS = 100;
 
 class histogram {
 public:
-	histogram(const size_t& num_elements, const size_t& bins = NUM_BINS);
+	histogram(const size_t& num_elements = 1, const size_t& bins = NUM_BINS);
 
 	// overloads
 	friend std::ostream& operator<<(std::ostream& os, const histogram& h);
@@ -31,6 +31,7 @@ public:
 	double GetStandardDeviation () const;
 
 	// accessors
+	size_t GetNumBins            ()                    const;
 	double FrequencyOf           (const size_t& value) const;
 	double CumulativeFrequencyOf (const size_t& value) const;
 

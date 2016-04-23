@@ -68,6 +68,7 @@ double histogram::GetStandardDeviation() const {
 	return sqrt(GetVariance());
 }
 
+size_t histogram::GetNumBins            ()                    const { return     freq_.size(); }
 double histogram::FrequencyOf           (const size_t& value) const { return     freq_[value]; }
 double histogram::CumulativeFrequencyOf (const size_t& value) const { return cum_freq_[value]; }
 

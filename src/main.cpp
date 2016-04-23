@@ -2,6 +2,7 @@
 #include "imdb_importer.h"
 #include "imdb_scorer.h"
 #include "topk_nra.h"
+#include "topk_util.h"
 #include <iomanip>
 using namespace std;
 
@@ -24,7 +25,8 @@ int main() {
 	scorer.ScoreTitles("300",      by_titles);
 	scorer.ScoreActors("Butler, Gerard", by_actors);
 	scorer.ScoreGenres("Action,Fantasy,War", by_genres); 
-	scorer.ScoreTags("spartan,greek,historical-fiction", by_tags);      
+	scorer.ScoreTags("spartan,greek,historical-fiction", by_tags); 
+
 	topk::scoreset top = topk::NRA::TopK(K, { &by_tags, &by_genres, &by_titles, &by_actors });
 	for (auto movie : top) {
 		cout << "\t" << data.movies[movie.first] << endl;

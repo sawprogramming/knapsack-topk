@@ -20,8 +20,9 @@ public:
 	void Discover    (const size_t& index, const double& value);
 	void UpdateRange (const size_t& index, const double& value);
 
-	double best_score  () const;
-	double worst_score () const;
+	double best_score   () const;
+	double worst_score  () const;
+	bool   DiscoveredOn (const size_t& index) const;
 
 private:
 	size_t  num_lists_;
