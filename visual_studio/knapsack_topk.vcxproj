@@ -17,6 +17,7 @@
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\movie.cpp" />
     <ClCompile Include="..\src\string_util.cpp" />
+    <ClCompile Include="..\src\topk_knapsack.cpp" />
     <ClCompile Include="..\src\topk_nra.cpp" />
     <ClCompile Include="..\src\topk_score_range.cpp" />
     <ClCompile Include="..\src\topk_util.cpp" />
@@ -29,6 +30,8 @@
     <ClInclude Include="..\src\imdb_scorer.h" />
     <ClInclude Include="..\src\indexed_vector.h" />
     <ClInclude Include="..\src\movie.h" />
+    <ClInclude Include="..\src\statistics.h" />
+    <ClInclude Include="..\src\topk_knapsack.h" />
     <ClInclude Include="..\src\topk_nra.h" />
     <ClInclude Include="..\src\pcre.h" />
     <ClInclude Include="..\src\string_util.h" />

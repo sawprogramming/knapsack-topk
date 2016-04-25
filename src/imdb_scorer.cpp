@@ -24,6 +24,8 @@ void Scorer::ScoreTitles(std::string query, topk::scoreset& scores) const {
 
 		scores.push_back(topk::score(i, score));
 	}
+
+	scores.at(0);
 }
 
 void Scorer::ScoreGenres(std::string query, topk::scoreset& scores) const {
@@ -52,6 +54,7 @@ void Scorer::ScoreGenres(std::string query, topk::scoreset& scores) const {
 
 		scores.push_back(topk::score(i, score));
 	}
+	scores.at(0);
 }
 
 void Scorer::ScoreActors(std::string query, topk::scoreset& scores) const {
@@ -80,6 +83,7 @@ void Scorer::ScoreActors(std::string query, topk::scoreset& scores) const {
 
 		scores.push_back(topk::score(i, score));
 	}
+	scores.at(0);
 }
 
 void Scorer::ScoreTags(std::string query, topk::scoreset& scores) const {
@@ -108,6 +112,7 @@ void Scorer::ScoreTags(std::string query, topk::scoreset& scores) const {
 
 		scores.push_back(topk::score(i, score));
 	}
+	scores.at(0);
 }
 
 } // IMDB namespace

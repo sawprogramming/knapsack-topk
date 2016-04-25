@@ -3,6 +3,8 @@
 #include "imdb_scorer.h"
 #include "topk_nra.h"
 #include "topk_util.h"
+#include "statistics.h"
+#include "topk_knapsack.h"
 #include <iomanip>
 using namespace std;
 
@@ -25,10 +27,20 @@ int main() {
 	scorer.ScoreTitles("300",      by_titles);
 	scorer.ScoreActors("Butler, Gerard", by_actors);
 	scorer.ScoreGenres("Action,Fantasy,War", by_genres); 
-	scorer.ScoreTags("spartan,greek,historical-fiction", by_tags); 
+	scorer.ScoreTags("spartan,greek,historical-fiction", by_tags);
 
+	topk::Knapsack ks({ &by_tags, &by_genres, &by_titles, &by_actors }, data.movies.size());;
+
+	cout << "NRA: " << endl;
 	topk::scoreset top = topk::NRA::TopK(K, { &by_tags, &by_genres, &by_titles, &by_actors });
 	for (auto movie : top) {
+		cout << "\t" << data.movies[movie.first] << endl;
+	}
+	cout << endl;
+
+	cout << "KNAPSACK: " << endl;
+	topk::scoreset top2 = ks.TopK(10);
+	for (auto movie : top2) {
 		cout << "\t" << data.movies[movie.first] << endl;
 	}
 	cout << endl;

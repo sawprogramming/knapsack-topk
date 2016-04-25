@@ -45,6 +45,10 @@ double TopkUtil::PredictScore(const score_range& sr, const double& target, const
 double TopkUtil::FeatureCorrelation(const size_t& i, const score_range& sr) const {
 	double max_correlation = 0;
 
+	// if its already been seen on this list, there's no chance of seeing it again
+	if (sr.DiscoveredOn(i)) return 0;
+
+	// do the correlations
 	for (size_t list = 0; list < lists_.size(); ++list) {
 		if (i != list && sr.DiscoveredOn(list)) {
 			double correlation = ((double)contingency_table_[i][list] / lists_[list]->size());

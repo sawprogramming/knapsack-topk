@@ -12,7 +12,7 @@ public:
 	TopkUtil(std::initializer_list<scoreset*> sets, const size_t& num_elements);
 
 	double PredictScore        (const score_range& sr, const double& target, const std::vector<statistics::histogram> histograms) const;
-	double FeatureCorrelation  (const size_t& i, const score_range& sr)                                                           const;
+	double FeatureCorrelation  (const size_t& i,       const score_range& sr)                                                     const;
 	double EstimateSelectivity (const score_range& sr, const std::vector<size_t>& positions)                                      const;
 
 private:
