@@ -4,7 +4,7 @@ namespace topk {
 
 score_range::score_range(const size_t& num_lists) : worst_score_(0), best_score_(0), num_lists_(num_lists) {
 	fields_ = new score_range_field[num_lists];
-	std::fill_n(fields_, num_lists_, score_range_field(false,0));
+	std::fill_n(fields_, num_lists_, score_range_field(false, 0));
 }
 
 score_range::score_range(const score_range& ref) : score_range(ref.num_lists_) {

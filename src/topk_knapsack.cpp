@@ -16,48 +16,52 @@ Knapsack::Knapsack(std::initializer_list<scoreset*> sets, const size_t& num_elem
 scoreset Knapsack::TopK(const size_t& K) {
 	scoreset            topk;
 	size_t              spent_accesses = 0;
-	std::vector<size_t> accesses;
-	double benefit = 0;
+	std::vector<size_t> accesses(lists_.size(), 1);
+	std::vector<double> highi(lists_.size(), 0);
 
-	FindBestSchedule(accesses);
+	// loop while there is benefit in doing so
 	do {
-		// spend the accesses
 		for (size_t list = 0; list < lists_.size(); ++list) {
 			for (size_t batch_size = 0; batch_size < accesses[list]; ++batch_size) {
-				score rank = *itrs_[list];
+				score rank  = *itrs_[list];
+				highi[list] = rank.second;
 
+				// add the key to the top-k if it isn't in there, then discover the new score
 				if (!candidates_.HasKey(rank.first)) {
 					candidates_.push_back(score_range_pair(rank.first, lists_.size()));
 				}
+				candidates_[rank.first].Discover(list, rank.second);
 
-				for (auto temp = candidates_.begin(false); temp != candidates_.end(); ++temp) {
-					if (temp->first == rank.first) temp->second.Discover(list, rank.second);
-					else                           temp->second.UpdateRange(list, rank.second);
-				}
-
+				// book keeping...
 				++itrs_[list];
 				++positions_[list];
 				++spent_accesses;
 			}
 		}
 
-		//stop if nothing more can be done, mink > best_score(c), otherwise prune
+		// update all best_scores
+		for (auto itr = candidates_.begin(false); itr != candidates_.end(); ++itr) {
+			for (size_t list = 0; list < lists_.size(); ++list) {
+				itr->second.UpdateRange(list, highi[list]);
+			}
+		}
 
+		// stop if tie or mink > best_score(c), otherwise prune
 		if (candidates_.size() > K){
 			score_range a = candidates_.at(K - 1), b = candidates_.at(K);
 
 			if      (a.FullyDiscovered() && b.FullyDiscovered()) break;
 			else if (a.worst_score() > b.best_score())           break;
 			else {
-				//for (auto itr = candidates_.begin(); itr != candidates_.end();) {
-				//	if   (itr->second.best_score() < a.worst_score()) itr = candidates_.erase(itr->first);
-				//	else                                              ++itr;
-				//}
+				for(auto itr = candidates_.begin(); itr != candidates_.end();) {
+					if (itr->second.best_score() < a.worst_score()) itr = candidates_.erase(itr->first);
+					else                                            ++itr;
+				}
 			}
 		}
 
 		if(spent_accesses % RECOMPUTE_HISTOGRAM_THRESHOLD == 0) ComputeHistograms();
-	} while ((benefit = FindBestSchedule(accesses)) > 0);
+	} while(FindBestSchedule(accesses) > 0);
 
 	std::cout << "SPENT " << spent_accesses << std::endl;
 	size_t k = 0;
@@ -83,15 +87,23 @@ void Knapsack::ComputeHistograms() {
 double Knapsack::FindBestSchedule(std::vector<size_t>& schedule) const {
 	double                           best_value = 0;
 	size_t                           best_index = 0;
+	std::vector<std::vector<double>> benefits(lists_.size());
+
+	// find the benefits of each list to the proper depths
+	for (size_t list = 0; list < lists_.size(); ++list) {
+		for (size_t depth = 0; depth < lists_.size() + 1; ++depth) {
+			benefits[list].push_back(BenefitOfList(list, depth));
+		}
+	}
 
 	// find the best schedule
 	for (size_t permutation = 0; permutation < valid_permutations_.size(); ++permutation) {
-		double value = 0;
+		double benefit = 0;
 		for (size_t list = 0; list < valid_permutations_[permutation].size(); ++list) {
-			value += BenefitOfList(list, valid_permutations_[permutation][list]);
+			benefit += benefits[list][valid_permutations_[permutation][list]];
 		}
-		if (value > best_value) {
-			best_value = value;
+		if (benefit > best_value) {
+			best_value = benefit;
 			best_index = permutation;
 		}
 	}
@@ -103,9 +115,11 @@ double Knapsack::FindBestSchedule(std::vector<size_t>& schedule) const {
 double Knapsack::BenefitOfList(const size_t& list, const size_t& depth) const {
 	double benefit = 0;
 
-	if ((positions_[list] + depth) > lists_[list]->size()) {
-		return 0;
-	}
+	// conditions with no benefit
+	if (depth == 0)                                        return 0;
+	if ((positions_[list] + depth) > lists_[list]->size()) return 0;
+
+	// conditions with some benefit
 	for (auto candidate : candidates_) {
 		if (!candidate.second.DiscoveredOn(list)) {
 			benefit += BenefitOfObj(candidate.second, list, depth);
@@ -132,7 +146,7 @@ double Knapsack::BenefitOfObj(const score_range& obj, const size_t& list, const 
 }
 
 // ****************************************************************************
-// Stick to small numbers with this function.
+// Stick to small numbers with this function (less than 10).
 // Grows at the rate of (parameter + 1)^(num_lists)
 //    Example:
 //       With 4 lists and a parameter of 4, 625 intermediate results are generated

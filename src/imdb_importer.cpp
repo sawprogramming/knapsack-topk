@@ -37,7 +37,7 @@ bool Importer::Import(dataset& data) {
 }
 
 bool Importer::ImportActors() {
-	__int16      year;
+	__int16     year;
 	size_t      lineEnd, line_length;
 	const char* error;
 	int         rc, erroffset, progress = 0, ovector[15];
@@ -147,7 +147,7 @@ bool Importer::ImportActors() {
 }
 
 bool Importer::ImportGenres() {
-	__int16      year;
+	__int16     year;
 	size_t      lineEnd, line_length;
 	const char* error;
 	int         rc, erroffset, progress = 0, ovector[15];
@@ -304,7 +304,7 @@ bool Importer::ImportMovies() {
 }
 
 bool Importer::ImportTags() {
-	__int16      year;
+	__int16     year;
 	size_t      lineEnd, line_length;
 	const char* error;
 	int         rc, erroffset, progress = 0, ovector[15];

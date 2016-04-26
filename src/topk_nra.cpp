@@ -15,23 +15,28 @@ scoreset NRA::TopK(const size_t& K, std::initializer_list<scoreset*> sets) {
 
 	// for each row...
 	for(size_t row = 0; row < rows; ++row) {
+		std::vector<double> highi;
+
 		// ... look at each score list on that row ...
 		for (size_t list = 0; list < sets.size(); ++list) {
 			score rank = *(itrs[list]);
+			highi.push_back(rank.second);
 
-			// add the key to the top-k if it isn't in there
+			// add the key to the top-k if it isn't in there, then discover the new score
 			if (!topk.HasKey(rank.first)) {
 				topk.push_back(score_range_pair(rank.first, sets.size()));
 			}
-
-			// update the worst and best scores for each value in the topk list
-			for (auto temp = topk.begin(false); temp != topk.end(); ++temp) {
-				if   (temp->first == rank.first) temp->second.Discover(list,    rank.second);
-				else                             temp->second.UpdateRange(list, rank.second);
-			}
+			topk[rank.first].Discover(list, rank.second);
 
 			++spent_accesses;
 			(itrs[list])++;
+		}
+
+		// update all best_scores
+		for (auto temp = topk.begin(false); temp != topk.end(); ++temp) {
+			for (size_t list = 0; list < sets.size(); ++list) {
+				temp->second.UpdateRange(list, highi[list]);
+			}
 		}
 
 		// stop if tie or mink > best_score(c), otherwise prune
@@ -41,16 +46,15 @@ scoreset NRA::TopK(const size_t& K, std::initializer_list<scoreset*> sets) {
 			if      (a.FullyDiscovered() && b.FullyDiscovered()) break;
 			else if (a.worst_score() > b.best_score())           break;
 			else {
-				double mink = topk.at(K - 1).worst_score();
-
-				//for (auto itr = topk.begin(); itr != topk.end();) {
-				//	if (itr->second.best_score() < mink)  itr = topk.erase(itr->first);
-				//	else                                 ++itr;
-				//}
+				for (auto itr = topk.begin(); itr != topk.end();) {
+					if (itr->second.best_score() < a.worst_score()) itr = topk.erase(itr->first);
+					else                                            ++itr;
+				}
 			}
 		}
 	}
 	delete[] itrs;
+
 	std::cout << "SPENT " << spent_accesses << " ACCESSES" << std::endl;
 	// return the top-k
 	for (auto scorerange : topk) {

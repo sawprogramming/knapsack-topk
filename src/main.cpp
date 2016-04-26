@@ -39,12 +39,22 @@ int main() {
 	cout << endl;
 
 	cout << "KNAPSACK: " << endl;
-	topk::scoreset top2 = ks.TopK(10);
+	topk::scoreset top2 = ks.TopK(K);
 	for (auto movie : top2) {
 		cout << "\t" << data.movies[movie.first] << endl;
 	}
 	cout << endl;
 
+	size_t matches = 0;
+	for (auto movie : top) {
+		for (auto movie2 : top2) {
+			if (movie.first == movie2.first) {
+				++matches;
+				break;
+			}
+		}
+	}
+	std::cout << matches << "/" << K << std::endl;
 	system("pause");
 	return 0;
 }
@@ -94,6 +104,19 @@ void GetUserInput(const IMDB::dataset& data, const IMDB::Scorer& scorer) {
 		time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 		cout << "finished after " << time_spent << "s!" << endl;
 		for (auto movie : top) {
+			cout << "\t" << data.movies[movie.first] << endl;
+		}
+		cout << endl;
+
+		// calculate top-k
+		cout << " calculating top-" << K << "... " << flush;
+		begin = clock();
+		topk::Knapsack ks({ &by_tags, &by_genres, &by_titles, &by_actors }, data.movies.size());;
+		topk::scoreset top2 = ks.TopK(K);
+		end = clock();
+		time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+		cout << "finished after " << time_spent << "s!" << endl;
+		for (auto movie : top2) {
 			cout << "\t" << data.movies[movie.first] << endl;
 		}
 		cout << endl;

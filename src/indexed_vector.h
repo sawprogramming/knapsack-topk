@@ -35,7 +35,8 @@ public:
 	typename const_iterator begin() const;
 	typename const_iterator end() const;
 
-	Value operator[](const Key& i) const;
+	Value& operator[](const Key& i);
+	const Value& operator[](const Key& i) const;
 
 private:
 	void GenerateIndexes() const;
@@ -81,10 +82,9 @@ const Value& indexed_vector<Key, Value>::at(const size_t& pos) const {
 
 template <typename Key, typename Value>
 typename indexed_vector<Key, Value>::iterator indexed_vector<Key, Value>::erase(const Key& key) {
-	if (dirty_) GenerateIndexes();
 	indexed_vector<Key, Value>::iterator itr = values_.erase(values_.begin() + indexes_[key]);
 	indexes_.erase(key);
-	dirty_ = true;
+	GenerateIndexes();
 	return itr;
 }
 
@@ -120,12 +120,22 @@ typename indexed_vector<Key, Value>::const_iterator indexed_vector<Key, Value>::
 }
 
 template <typename Key, typename Value>
-Value indexed_vector<Key, Value>::operator[](const Key& i) const {
+Value& indexed_vector<Key, Value>::operator[](const Key& i) {
+	dirty_ = true;
 	return values_[indexes_[i]].second;
 }
 
 template <typename Key, typename Value>
+const Value& indexed_vector<Key, Value>::operator[](const Key& i) const {
+	dirty_ = true;
+	return values_[indexes_[i]].second;
+}
+
+
+template <typename Key, typename Value>
 void indexed_vector<Key, Value>::GenerateIndexes() const {
+	indexes_.clear();
+
 	sort(values_.begin(), values_.end(), [](const std::pair<Key, Value>& a, const std::pair<Key, Value>& b) {
 		return b.second < a.second;
 	});
